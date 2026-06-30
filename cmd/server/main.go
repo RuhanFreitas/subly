@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"subly/internal/config"
 	"subly/internal/database"
+	"subly/internal/handler"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,7 +13,7 @@ import (
 
 // migrate create -ext sql -dir migrations -seq create_users_table
 // migrate -path migrations -database $env:DATABASE_URL up
-// migrate -path migrations -database "postgresql://appuser:apppassword@localhost:5432/appdb?sslmode=disable" up
+// migrate -path migrations -database "postgresql://appuser:apppassword@localhost:15432/appdb?sslmode=disable" up
 
 func main() {
 	var cfg *config.Config
@@ -35,6 +36,9 @@ func main() {
 			"Health": "The API is healthy!",
 		})
 	})
+
+	// Auth
+	router.POST("/auth/register", handler.Register(pool, cfg))
 
 	// User
 

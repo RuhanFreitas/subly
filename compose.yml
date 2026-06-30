@@ -1,16 +1,16 @@
 services:
   db:
     image: postgres:16
-    container_name: postgres_db
+    container_name: subly_postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: appuser
       POSTGRES_PASSWORD: apppassword
       POSTGRES_DB: appdb
     ports:
-      - "5432:5432"
+      - "15432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - subly_postgres_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  subly_postgres_data:
