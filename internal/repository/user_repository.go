@@ -35,3 +35,33 @@ func CreateUser(pool *pgxpool.Pool, user *model.User) (*model.User, error) {
 
 	return user, nil
 }
+
+func GetUserByEmail(pool *pgxpool.Pool, email string) (*model.User, error) {
+	var ctx context.Context
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var query string = `
+			SELECT id, first_name, last_name, email, password, created_at, updated_at
+			FROM users
+			WHERE email = $1
+	`
+
+	var user model.User
+
+	err := pool.QueryRow(ctx, query, email).Scan(
+		&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.Password,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}

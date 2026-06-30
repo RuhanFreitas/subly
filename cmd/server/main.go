@@ -39,6 +39,7 @@ func main() {
 
 	// Auth
 	router.POST("/auth/register", handler.Register(pool, cfg))
+	router.POST("auth/login", handler.Login(pool, cfg))
 
 	// User
 

@@ -21,6 +21,11 @@ type RegisterRequest struct {
 	Password  string `json:"password" binding:"required"`
 }
 
+type LoginRequest struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
 func Register(pool *pgxpool.Pool, cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var registerRequest RegisterRequest
@@ -91,4 +96,54 @@ func Register(pool *pgxpool.Pool, cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
-func Login() {}
+func Login(pool *pgxpool.Pool, cfg *config.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var loginRequest LoginRequest
+
+		err := c.ShouldBindJSON(&loginRequest)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid request body"})
+			return
+		}
+
+		user, err := repository.GetUserByEmail(pool, loginRequest.Email)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			return
+		}
+
+		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid credentials"})
+			return
+		}
+
+		claims := jwt.MapClaims{
+			"user_id": user.ID,
+			"email":   user.Email,
+			"exp":     time.Now().Add(24 * time.Hour).Unix(),
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+		tokenString, err := token.SignedString([]byte(cfg.JWTSecret))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			return
+		}
+
+		c.SetCookie(
+			"auth_token",
+			tokenString,
+			36000*24,
+			"/",
+			"",
+			true,
+			true,
+		)
+
+		user.Password = ""
+
+		c.JSON(http.StatusOK, gin.H{"user": user})
+	}
+}
