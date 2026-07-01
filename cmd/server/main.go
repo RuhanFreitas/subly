@@ -42,10 +42,10 @@ func main() {
 	router.POST("auth/login", handler.Login(pool, cfg))
 
 	// User
-	router.PATCH("/user", handler.UpdateUserByID(pool))
-	router.DELETE("/user", handler.DeleteUser(pool))
+	router.PATCH("/user/:id", handler.UpdateUserByID(pool))
+	router.DELETE("/user/:id", handler.DeleteUser(pool))
 
 	// Subscription
 
-	router.Run(":8081")
+	router.Run(":" + cfg.Port)
 }
