@@ -42,6 +42,7 @@ func main() {
 	router.POST("auth/login", handler.Login(pool, cfg))
 
 	// User
+	router.GET("/user/:id", handler.GetUserByID(pool))
 	router.PATCH("/user/:id", handler.UpdateUserByID(pool))
 	router.DELETE("/user/:id", handler.DeleteUser(pool))
 

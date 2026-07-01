@@ -17,6 +17,26 @@ type UpdateUserInput struct {
 	Password  *string `json:"password"`
 }
 
+func GetUserByID(pool *pgxpool.Pool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idStr := c.Param("id")
+
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid access data"})
+			return
+		}
+
+		user, err := repository.GetUserByID(pool, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"user": user})
+	}
+}
+
 func UpdateUserByID(pool *pgxpool.Pool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		idStr := c.Param("id")
