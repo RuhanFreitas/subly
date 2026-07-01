@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"subly/internal/model"
 	"time"
 
@@ -126,4 +127,27 @@ func UpdateUserByID(pool *pgxpool.Pool, id int, firstName string, lastName strin
 	}
 
 	return &user, nil
+}
+
+func DeleteUser(pool *pgxpool.Pool, id int) error {
+	var ctx context.Context
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var query string = `
+			DELETE FROM users
+			WHERE id = $1
+	`
+
+	commandTag, err := pool.Exec(ctx, query, id)
+	if err != nil {
+		return err
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("User with ID %d not found", id)
+	}
+
+	return nil
 }

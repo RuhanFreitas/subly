@@ -43,6 +43,7 @@ func main() {
 
 	// User
 	router.PATCH("/user", handler.UpdateUserByID(pool))
+	router.DELETE("/user", handler.DeleteUser(pool))
 
 	// Subscription
 
