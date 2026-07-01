@@ -42,6 +42,7 @@ func main() {
 	router.POST("auth/login", handler.Login(pool, cfg))
 
 	// User
+	router.PATCH("/user", handler.UpdateUserByID(pool))
 
 	// Subscription
 
