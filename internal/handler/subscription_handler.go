@@ -18,7 +18,7 @@ type SubscriptionInput struct {
 	Price             float64   `json:"price" binding:"required"`
 	StartingDate      time.Time `json:"starting_date" binding:"required"`
 	PaymentDate       time.Time `json:"payment_date" binding:"required"`
-	SubscriptionRenew time.Time `json:"subscription_renew" binding:"required"`
+	SubscriptionRenew string    `json:"subscription_renew" binding:"required"`
 }
 
 func CreateSubscription(pool *pgxpool.Pool) gin.HandlerFunc {
@@ -45,7 +45,7 @@ func CreateSubscription(pool *pgxpool.Pool) gin.HandlerFunc {
 
 		subscription, err = repository.CreateSubscription(pool, subscription)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error occuried"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error occuried" + err.Error()})
 			return
 		}
 

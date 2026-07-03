@@ -9,7 +9,7 @@ type Subscription struct {
 	Price             float64   `json:"price" db:"price"`
 	StartingDate      time.Time `json:"starting_date" db:"starting_date"`
 	PaymentDate       time.Time `json:"payment_date" db:"payment_date"`
-	SubscriptionRenew time.Time `json:"subscription_renew" db:"subscription_renew"`
+	SubscriptionRenew string    `json:"subscription_renew" db:"subscription_renew"`
 	CreatedAt         time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at" db:"updated_at"`
 }
