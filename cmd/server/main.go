@@ -47,6 +47,7 @@ func main() {
 	router.DELETE("/user/:id", handler.DeleteUser(pool))
 
 	// Subscription
+	router.POST("susbcription/:id", handler.CreateSubscription(pool))
 
 	router.Run(":" + cfg.Port)
 }
