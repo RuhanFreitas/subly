@@ -51,6 +51,7 @@ func main() {
 	// *THIS ID IS THE USER ID, WE NEED TO CHANGE IT LATER AND GET THE USER ID THROUGH THE JWT
 	router.GET("/subscription/all/:id", handler.GetAllSubscriptions(pool))
 	router.GET("/subscription/:id", handler.GetSubscriptionByID(pool))
+	router.PATCH("/subscription/:id", handler.UpdateSubscription(pool))
 
 	router.Run(":" + cfg.Port)
 }

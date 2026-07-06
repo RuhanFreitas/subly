@@ -122,3 +122,39 @@ func GetSubscriptionByID(pool *pgxpool.Pool, id int) (*model.Subscription, error
 
 	return &subscription, nil
 }
+
+func UpdateSubscriptionByID(
+	pool *pgxpool.Pool, id int, name string, price float64,
+	startingDate time.Time, paymentDate time.Time,
+	subscriptionRenew string) (*model.Subscription, error) {
+	var ctx context.Context
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var query string = `
+				UPDATE subscriptions
+				SET name = $1, price = $2, starting_date = $3, payment_date = $4, subscription_renew = $5, updated_at = CURRENT_TIMESTAMP
+				WHERE id = $6
+				RETURNING id, user_id, name, price, starting_date, payment_date, subscription_renew, created_at, updated_at
+		`
+
+	var subscription model.Subscription
+
+	err := pool.QueryRow(ctx, query, name, price, startingDate, paymentDate, subscriptionRenew, id).Scan(
+		&subscription.ID,
+		&subscription.UserID,
+		&subscription.Name,
+		&subscription.Price,
+		&subscription.PaymentDate,
+		&subscription.StartingDate,
+		&subscription.SubscriptionRenew,
+		&subscription.CreatedAt,
+		&subscription.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &subscription, nil
+}

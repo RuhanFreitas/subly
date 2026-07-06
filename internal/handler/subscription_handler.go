@@ -22,6 +22,14 @@ type SubscriptionInput struct {
 	SubscriptionRenew string    `json:"subscription_renew" binding:"required"`
 }
 
+type UpdateSubscriptionInput struct {
+	Name              *string    `json:"name"`
+	Price             *float64   `json:"price"`
+	StartingDate      *time.Time `json:"starting_date"`
+	PaymentDate       *time.Time `json:"payment_date"`
+	SubscriptionRenew *string    `json:"subscription_renew"`
+}
+
 func CreateSubscription(pool *pgxpool.Pool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
@@ -94,6 +102,64 @@ func GetSubscriptionByID(pool *pgxpool.Pool) gin.HandlerFunc {
 				return
 			}
 
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error occuried"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"subscription": subscription})
+	}
+}
+
+func UpdateSubscription(pool *pgxpool.Pool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parameter"})
+			return
+		}
+
+		var updateInput UpdateSubscriptionInput
+
+		if err := c.ShouldBindJSON(&updateInput); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body request"})
+			return
+		}
+
+		var subscription *model.Subscription
+		subscription, err = repository.GetSubscriptionByID(pool, id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Subscription not found"})
+			return
+		}
+
+		name := subscription.Name
+		if updateInput.Name != nil {
+			name = *updateInput.Name
+		}
+
+		price := subscription.Price
+		if updateInput.Price != nil {
+			price = *updateInput.Price
+		}
+
+		startingDate := subscription.StartingDate
+		if updateInput.StartingDate != nil {
+			startingDate = *updateInput.StartingDate
+		}
+
+		paymentDate := subscription.PaymentDate
+		if updateInput.PaymentDate != nil {
+			paymentDate = *updateInput.PaymentDate
+		}
+
+		subscriptionRenew := subscription.SubscriptionRenew
+		if updateInput.SubscriptionRenew != nil {
+			subscriptionRenew = *updateInput.SubscriptionRenew
+		}
+
+		subscription, err = repository.UpdateSubscriptionByID(pool, id, name, price, startingDate, paymentDate, subscriptionRenew)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error occuried"})
 			return
 		}
