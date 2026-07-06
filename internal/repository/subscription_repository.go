@@ -90,3 +90,35 @@ func GetAllSubscriptions(pool *pgxpool.Pool, id int) (*[]model.Subscription, err
 
 	return &subscriptions, nil
 }
+
+func GetSubscriptionByID(pool *pgxpool.Pool, id int) (*model.Subscription, error) {
+	var ctx context.Context
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var query string = `
+			SELECT id, user_id, name, price, starting_date, payment_date, subscription_renew, created_at, updated_at 
+			FROM subscriptions
+			WHERE id = $1
+	`
+
+	var subscription model.Subscription
+
+	err := pool.QueryRow(ctx, query, id).Scan(
+		&subscription.ID,
+		&subscription.UserID,
+		&subscription.Name,
+		&subscription.Price,
+		&subscription.StartingDate,
+		&subscription.PaymentDate,
+		&subscription.SubscriptionRenew,
+		&subscription.CreatedAt,
+		&subscription.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &subscription, nil
+}

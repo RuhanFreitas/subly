@@ -75,3 +75,29 @@ func GetAllSubscriptions(pool *pgxpool.Pool) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"subscriptions": subscriptions})
 	}
 }
+
+func GetSubscriptionByID(pool *pgxpool.Pool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parameter"})
+			return
+		}
+
+		var subscription *model.Subscription
+
+		subscription, err = repository.GetSubscriptionByID(pool, id)
+		if err != nil {
+			if err.Error() == "no rows in result set" {
+				c.JSON(http.StatusNotFound, gin.H{"error": "No subscription found"})
+				return
+			}
+
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error occuried"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"subscription": subscription})
+	}
+}
