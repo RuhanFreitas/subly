@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"subly/internal/model"
 	"subly/internal/repository"
 	"time"
@@ -50,5 +51,27 @@ func CreateSubscription(pool *pgxpool.Pool) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusCreated, gin.H{"susbcription": subscription})
+	}
+}
+
+func GetAllSubscriptions(pool *pgxpool.Pool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idStr := c.Param("id")
+
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parameter"})
+			return
+		}
+
+		var subscriptions *[]model.Subscription
+
+		subscriptions, err = repository.GetAllSubscriptions(pool, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error occuried"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"subscriptions": subscriptions})
 	}
 }
