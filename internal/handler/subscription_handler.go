@@ -25,6 +25,7 @@ type SubscriptionInput struct {
 type UpdateSubscriptionInput struct {
 	Name              *string    `json:"name"`
 	Price             *float64   `json:"price"`
+	IsActive          *bool      `json:"is_active"`
 	StartingDate      *time.Time `json:"starting_date"`
 	PaymentDate       *time.Time `json:"payment_date"`
 	SubscriptionRenew *string    `json:"subscription_renew"`
@@ -144,6 +145,11 @@ func UpdateSubscription(pool *pgxpool.Pool) gin.HandlerFunc {
 			price = *updateInput.Price
 		}
 
+		isActive := subscription.IsActive
+		if updateInput.IsActive != nil {
+			isActive = *updateInput.IsActive
+		}
+
 		startingDate := subscription.StartingDate
 		if updateInput.StartingDate != nil {
 			startingDate = *updateInput.StartingDate
@@ -159,7 +165,7 @@ func UpdateSubscription(pool *pgxpool.Pool) gin.HandlerFunc {
 			subscriptionRenew = *updateInput.SubscriptionRenew
 		}
 
-		subscription, err = repository.UpdateSubscriptionByID(pool, id, name, price, startingDate, paymentDate, subscriptionRenew)
+		subscription, err = repository.UpdateSubscriptionByID(pool, id, name, price, isActive, startingDate, paymentDate, subscriptionRenew)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error occuried"})
 			return

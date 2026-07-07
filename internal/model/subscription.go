@@ -7,6 +7,7 @@ type Subscription struct {
 	UserID            string    `json:"user_id" db:"user_id"`
 	Name              string    `json:"name" db:"name"`
 	Price             float64   `json:"price" db:"price"`
+	IsActive          bool      `json:"is_active" db:"is_active"`
 	StartingDate      time.Time `json:"starting_date" db:"starting_date"`
 	PaymentDate       time.Time `json:"payment_date" db:"payment_date"`
 	SubscriptionRenew string    `json:"subscription_renew" db:"subscription_renew"`

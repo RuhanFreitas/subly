@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     user_id INTEGER NOT NULL,
     name VARCHAR(50) NOT NULL,
     price NUMERIC NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
     starting_date TIMESTAMP NOT NULL,
     payment_date TIMESTAMP NOT NULL,
     subscription_renew TEXT NOT NULL,
