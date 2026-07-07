@@ -6,6 +6,7 @@ import (
 	"subly/internal/config"
 	"subly/internal/database"
 	"subly/internal/handler"
+	midleware "subly/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -42,17 +43,17 @@ func main() {
 	router.POST("auth/login", handler.Login(pool, cfg))
 
 	// User
-	router.GET("/user/:id", handler.GetUserByID(pool))
-	router.PATCH("/user/:id", handler.UpdateUserByID(pool))
-	router.DELETE("/user/:id", handler.DeleteUser(pool))
+	router.GET("/user/:id", midleware.AuthMiddleware(cfg), handler.GetUserByID(pool))
+	router.PATCH("/user/:id", midleware.AuthMiddleware(cfg), handler.UpdateUserByID(pool))
+	router.DELETE("/user/:id", midleware.AuthMiddleware(cfg), handler.DeleteUser(pool))
 
 	// Subscription
-	router.POST("/subscription/:id", handler.CreateSubscription(pool))
+	router.POST("/subscription/:id", midleware.AuthMiddleware(cfg), handler.CreateSubscription(pool))
 	// *THIS ID IS THE USER ID, WE NEED TO CHANGE IT LATER AND GET THE USER ID THROUGH THE JWT
-	router.GET("/subscription/all/:id", handler.GetAllSubscriptions(pool))
-	router.GET("/subscription/:id", handler.GetSubscriptionByID(pool))
-	router.PATCH("/subscription/:id", handler.UpdateSubscription(pool))
-	router.DELETE("/subscription/:id", handler.DeleteSubscription(pool))
+	router.GET("/subscription/all/:id", midleware.AuthMiddleware(cfg), handler.GetAllSubscriptions(pool))
+	router.GET("/subscription/:id", midleware.AuthMiddleware(cfg), handler.GetSubscriptionByID(pool))
+	router.PATCH("/subscription/:id", midleware.AuthMiddleware(cfg), handler.UpdateSubscription(pool))
+	router.DELETE("/subscription/:id", midleware.AuthMiddleware(cfg), handler.DeleteSubscription(pool))
 
 	router.Run(":" + cfg.Port)
 }
