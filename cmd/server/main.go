@@ -48,9 +48,8 @@ func main() {
 	router.DELETE("/user/:id", midleware.AuthMiddleware(cfg), handler.DeleteUser(pool))
 
 	// Subscription
-	router.POST("/subscription/:id", midleware.AuthMiddleware(cfg), handler.CreateSubscription(pool))
-	// *THIS ID IS THE USER ID, WE NEED TO CHANGE IT LATER AND GET THE USER ID THROUGH THE JWT
-	router.GET("/subscription/all/:id", midleware.AuthMiddleware(cfg), handler.GetAllSubscriptions(pool))
+	router.POST("/subscription", midleware.AuthMiddleware(cfg), handler.CreateSubscription(pool))
+	router.GET("/subscription", midleware.AuthMiddleware(cfg), handler.GetAllSubscriptions(pool))
 	router.GET("/subscription/:id", midleware.AuthMiddleware(cfg), handler.GetSubscriptionByID(pool))
 	router.PATCH("/subscription/:id", midleware.AuthMiddleware(cfg), handler.UpdateSubscription(pool))
 	router.DELETE("/subscription/:id", midleware.AuthMiddleware(cfg), handler.DeleteSubscription(pool))

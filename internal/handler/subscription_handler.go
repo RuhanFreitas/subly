@@ -32,19 +32,18 @@ type UpdateSubscriptionInput struct {
 
 func CreateSubscription(pool *pgxpool.Pool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		id := c.Param("id")
+		userID := c.MustGet("userID").(string)
 
 		var input *SubscriptionInput
 
 		err := c.ShouldBindJSON(&input)
-
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid body request"})
 			return
 		}
 
 		var subscription *model.Subscription = &model.Subscription{
-			UserID:            id,
+			UserID:            userID,
 			Name:              input.Name,
 			Price:             input.Price,
 			StartingDate:      input.StartingDate,
@@ -64,11 +63,13 @@ func CreateSubscription(pool *pgxpool.Pool) gin.HandlerFunc {
 
 func GetAllSubscriptions(pool *pgxpool.Pool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		idStr := c.Param("id")
+		userID := c.MustGet("userID").(string)
 
-		id, err := strconv.Atoi(idStr)
+		id, err := strconv.Atoi(userID)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parameter"})
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Invalid parameter",
+			})
 			return
 		}
 
