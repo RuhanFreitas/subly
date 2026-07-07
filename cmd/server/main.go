@@ -52,6 +52,7 @@ func main() {
 	router.GET("/subscription/all/:id", handler.GetAllSubscriptions(pool))
 	router.GET("/subscription/:id", handler.GetSubscriptionByID(pool))
 	router.PATCH("/subscription/:id", handler.UpdateSubscription(pool))
+	router.DELETE("/subscription/:id", handler.DeleteSubscription(pool))
 
 	router.Run(":" + cfg.Port)
 }

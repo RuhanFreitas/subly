@@ -167,3 +167,23 @@ func UpdateSubscription(pool *pgxpool.Pool) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"subscription": subscription})
 	}
 }
+
+func DeleteSubscription(pool *pgxpool.Pool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idStr := c.Param("id")
+
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid parameter"})
+			return
+		}
+
+		err = repository.DeleteSubscription(pool, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error occuried"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Subscription deleted successfully"})
+	}
+}
