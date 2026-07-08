@@ -26,8 +26,6 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-// maybe pass the jwt token to a function a part of the handler package to avoid code duplication
-
 func Register(pool *pgxpool.Pool, cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var registerRequest RegisterRequest

@@ -12,10 +12,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// migrate create -ext sql -dir migrations -seq create_users_table
-// migrate -path migrations -database $env:DATABASE_URL up
-// migrate -path migrations -database "postgresql://appuser:apppassword@localhost:15432/appdb?sslmode=disable" up
-
 func main() {
 	var cfg *config.Config
 	var err error
@@ -38,16 +34,13 @@ func main() {
 		})
 	})
 
-	// Auth
 	router.POST("/auth/register", handler.Register(pool, cfg))
 	router.POST("auth/login", handler.Login(pool, cfg))
 
-	// User
 	router.GET("/user/:id", midleware.AuthMiddleware(cfg), handler.GetUserByID(pool))
 	router.PATCH("/user/:id", midleware.AuthMiddleware(cfg), handler.UpdateUserByID(pool))
 	router.DELETE("/user/:id", midleware.AuthMiddleware(cfg), handler.DeleteUser(pool))
 
-	// Subscription
 	router.POST("/subscription", midleware.AuthMiddleware(cfg), handler.CreateSubscription(pool))
 	router.GET("/subscription", midleware.AuthMiddleware(cfg), handler.GetAllSubscriptions(pool))
 	router.GET("/subscription/:id", midleware.AuthMiddleware(cfg), handler.GetSubscriptionByID(pool))
