@@ -25,10 +25,10 @@ export default function Navbar() {
             <div
                 className={`flex gap-4 items-center ${inter.className} text-sm`}
             >
-                <button className="py-1.5 px-5 rounded-lg text-center font-medium text-white border border-white/60">
+                <button className="py-2 px-5 rounded-lg text-center font-medium text-white border border-white/20 hover:border-violet-400 cursor-pointer">
                     Sign In
                 </button>
-                <button className="py-1.5 px-5 rounded-lg text-center font-medium text-white border border-white/60 bg-violet-400">
+                <button className="py-2 px-5 rounded-lg text-center font-medium text-white bg-violet-400 cursor-pointer">
                     Get started
                 </button>
             </div>
