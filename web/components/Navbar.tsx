@@ -1,7 +1,11 @@
 import { RefreshCwIcon } from 'lucide-react'
-import { Playfair } from 'next/font/google'
+import { Inter, Playfair } from 'next/font/google'
 
 const playfair = Playfair({
+    subsets: ['latin'],
+})
+
+const inter = Inter({
     subsets: ['latin'],
 })
 
@@ -18,11 +22,13 @@ export default function Navbar() {
                     Subly
                 </h1>
             </div>
-            <div className="flex gap-4">
-                <button className="py-1.5 px-5 rounded-lg text-center font-semibold text-white border border-white/60 ">
+            <div
+                className={`flex gap-4 items-center ${inter.className} text-sm`}
+            >
+                <button className="py-1.5 px-5 rounded-lg text-center font-medium text-white border border-white/60">
                     Sign In
                 </button>
-                <button className="py-1.5 px-5 rounded-lg text-center font-semibold text-white border border-white/60 bg-violet-400">
+                <button className="py-1.5 px-5 rounded-lg text-center font-medium text-white border border-white/60 bg-violet-400">
                     Get started
                 </button>
             </div>
